@@ -7,28 +7,32 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>BSC capacity calculator</title>
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+	 crossorigin="anonymous">
 </head>
 
 <body>
-	<form>
-		<table id="channel-matrix-table">
-			<thead>
-				
-			</thead>
-			<tbody>
-			
-			</tbody>
-		</table>
-		<button type="submit">Calculate channel capacity</button>
-	</form>
+	<div class="container">
+		<form>
+			<table class="table table-bordered" id="channel-matrix-table">
+				<thead>
+
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
+			<button type="submit">Calculate channel capacity</button>
+		</form>
+	</div>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 	 crossorigin="anonymous"></script>
 </body>
 
+<script src="calculator.js"></script>
 <script>
 	var tableRef = document.getElementById("channel-matrix-table").getElementsByTagName('tbody')[0];
-	
+
 	var noise = [
 		[.2, .8],
 		[.8, .2]
@@ -37,25 +41,30 @@
 	for (let i = 0; i < noise.length; i++) {
 		let newRow = tableRef.insertRow(i);
 		for (let j = 0; j < noise[i].length; j++) {
-			let input = document.createElement("input");
-			input.type = "number";
-			input.min = 0;
-			input.max = 0;
-			input.step = 0.0001;
-			input.name = input.id = `${i}${j}`
-			input.value = noise[i][j]
 			newRow
 				.insertCell(j)
-				.appendChild(input)
+				.appendChild(createInput(`${i}${j}`, noise[i][j]))
 		}
 	}
 
 	inputProbA = document.getElementById('inputProbA');
 	inputProbB = document.getElementById('inputProbB');
 
-	HBA = 
+	HBA =
 
-	console.log(noise);
+		console.log(noise);
+
+	function createInput(id, value) {
+		let input = document.createElement("input");
+		input.classList = "form-control"
+		input.type = "number";
+		input.min = 0;
+		input.max = 0;
+		input.step = 0.0001;
+		input.name = input.id = id;
+		input.value = value;
+		return input;
+	}
 </script>
 
 </html>
