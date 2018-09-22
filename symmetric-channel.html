@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>BSC capacity calculator</title>
+	<title>Simmetryc channel capacity calculator</title>
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 	 crossorigin="anonymous">
@@ -19,22 +19,34 @@
 
 <body>
 	<div class="container">
-		<h1 class="text-center my-4">BSC capacity calculator</h1>
+		<h1 class="text-center my-4">Simmetryc channel capacity calculator</h1>
 		<form class="clearfix" onsubmit="setChannelMatrixValues()">
-			<div class="form-group">
-				<label for="error">Error rate</label>
-				<input class="form-control" type="number" name="error" id="error" min="0" max="1" step="0.01" value="0.1">
+
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="error">Error rate</label>
+						<input class="form-control" type="number" name="error" id="error" min="0" max="1" step="0.01" value="0.1">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="q">Channel arity</label>
+						<select name="q" id="q" class="form-control">
+							<option selected value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-4">
+						<div class="form-group">
+							<label for="">&nbsp;</label>
+							<input class="btn btn-primary form-control" type="submit" name="set-matrix" id="set-matrix" value="Calculate channel capacity">
+						</div>
+				</div>
 			</div>
 
-			<div class="form-group">
-				<label for="q">Channel arity</label>
-				<select name="q" id="q" class="form-control">
-					<option selected value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-				</select>
-			</div>
-			<input class="btn btn-primary float-right" type="submit" name="set-matrix" id="set-matrix" value="Calculate channel capacity">
 		</form>
 		<br>
 		<h2>Channel matrix</h2>
@@ -44,7 +56,7 @@
 			</tbody>
 		</table>
 
-		<h4>Channel capacity: <span id="channel-capacity"></span></h4>
+		<h4>Maximum channel capacity: <span id="channel-capacity"></span></h4>
 	</div>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 	 crossorigin="anonymous"></script>
@@ -60,8 +72,7 @@
 	var q = parseInt(qRef.value);
 	var error = parseFloat(errorRef.value);
 
-	var channelMatrix = createChannelMatrix(q);
-	var channelMatrix = populateChannelMatrix(channelMatrix, error);
+	var channelMatrix = populateChannelMatrix(createChannelMatrix(q), error);
 	displayChannelMatrix(channelMatrix);
 	setChannelMatrixValues(channelMatrix)
 
@@ -106,10 +117,9 @@
 		tableRef.innerHTML = null;
 		let q = parseInt(qRef.value);
 		let error = parseFloat(errorRef.value);
-		let channelMatrix = createChannelMatrix(q);
-		channelMatrix = populateChannelMatrix(channelMatrix, error);
+		channelMatrix = populateChannelMatrix(createChannelMatrix(q), error);
 		displayChannelMatrix(channelMatrix);
-		channelCapacityRef.innerText = calculateChannelCapacity(channelMatrix) + ' bits/channel';
+		channelCapacityRef.innerText = calculateChannelCapacity(channelMatrix, q) + ' bits/channel';
 	}
 </script>
 
