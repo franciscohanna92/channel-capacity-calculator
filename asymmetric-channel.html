@@ -5,25 +5,68 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>BSC capacity calculator</title>
+	<title>Asimmetryc channel capacity calculator</title>
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 	 crossorigin="anonymous">
+
+	<style>
+		td {
+			text-align: center
+		}
+	</style>
 </head>
 
-<body>
-	<div class="container">
-		<form>
+<body class="bg-light">
+	<div class="container-fluid bg-secondary">
+		<div class="container">
+			<nav>
+				<ul class="nav py-2">
+					<li class="nav-item">
+						<a class="nav-link text-white" href="index.html">Symmetric channel calculator</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link text-white active" href="asymmetric-channel.html">Asymmetric channel calculator</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+	<div class="container p-5 bg-white">
+		<h1 class="text-center mb-4">Asymmetric channel capacity calculator</h1>
+		<form class="clearfix" onsubmit="getChannelCapacity()">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="q">Channel arity</label>
+						<select name="q" id="q" class="form-control" onchange="createNewMatrix()">
+							<option selected value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="">&nbsp;</label>
+						<input class="btn btn-primary form-control" type="submit" name="set-matrix" id="set-matrix" value="Calculate channel capacity">
+					</div>
+				</div>
+			</div>
+			<small><i>Note: numbers in rows should add up to 1</i></small>
 			<table class="table table-bordered" id="channel-matrix-table">
 				<thead>
-
+	
 				</thead>
 				<tbody>
-
+	
 				</tbody>
 			</table>
-			<button type="submit">Calculate channel capacity</button>
 		</form>
+
+		<h4>Maximum channel capacity: <span id="channel-capacity"></span></h4>
+		<h4>Input probabilities: <span id="input-probabilities"></span></h4>
+		
 	</div>
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 	 crossorigin="anonymous"></script>
@@ -32,38 +75,76 @@
 <script src="calculator.js"></script>
 <script>
 	var tableRef = document.getElementById("channel-matrix-table").getElementsByTagName('tbody')[0];
+	var qRef = document.getElementById("q");
+	var channelCapacityRef = document.getElementById("channel-capacity");
+	var inputProbabilities = document.getElementById("input-probabilities");
 
-	var noise = [
-		[.2, .8],
-		[.8, .2]
+	var channelMatrix = [
+		[.4, .6],
+		[.3, .7]
 	]
 
-	for (let i = 0; i < noise.length; i++) {
+	for (let i = 0; i < channelMatrix.length; i++) {
 		let newRow = tableRef.insertRow(i);
-		for (let j = 0; j < noise[i].length; j++) {
+		for (let j = 0; j < channelMatrix[i].length; j++) {
 			newRow
 				.insertCell(j)
-				.appendChild(createInput(`${i}${j}`, noise[i][j]))
+				.appendChild(createInput(`${i}${j}`, channelMatrix[i][j]))
 		}
 	}
 
-	inputProbA = document.getElementById('inputProbA');
-	inputProbB = document.getElementById('inputProbB');
-
-	HBA =
-
-		console.log(noise);
+	getChannelCapacity();
 
 	function createInput(id, value) {
 		let input = document.createElement("input");
 		input.classList = "form-control"
 		input.type = "number";
 		input.min = 0;
-		input.max = 0;
-		input.step = 0.0001;
+		input.max = 1;
+		input.step = 0.1;
 		input.name = input.id = id;
 		input.value = value;
+		input.required = true
 		return input;
+	}
+
+	function createNewMatrix() {
+		let q = parseInt(qRef.value);
+		tableRef.innerHTML = null;
+
+		channelMatrix = new Array(q);
+		for (let i = 0; i < channelMatrix.length; i++) {
+			channelMatrix[i] = new Array(q);
+		}
+		for (let i = 0; i < channelMatrix.length; i++) {
+			let newRow = tableRef.insertRow(i);
+			for (let j = 0; j < channelMatrix[i].length; j++) {
+				newRow
+					.insertCell(j)
+					.appendChild(createInput(`${i}${j}`, channelMatrix[i][j]))
+			}
+		}
+
+		
+		// channelMatrix = populateChannelMatrix(createChannelMatrix(q), error);
+		// displayChannelMatrix(channelMatrix);
+		// channelCapacityRef.innerText = calculateChannelCapacity(channelMatrix, q) + ' bits/channel';
+	}
+
+	function getChannelCapacity() {
+		if (event)
+			event.preventDefault();
+
+		let q = parseInt(qRef.value);
+		for (let i = 0; i < q; i++) {
+			for (let j = 0; j < q; j++) {
+				channelMatrix[i][j] = parseFloat(document.getElementById(`${i}${j}`).value)
+			}
+		}
+
+		let result = calculateChannelCapacity(channelMatrix, q);
+		channelCapacityRef.innerText = result.maxCapacity + ' bits/channel';
+		inputProbabilities.innerText = '[' + result.probX.join('; ') + ']';
 	}
 </script>
 
